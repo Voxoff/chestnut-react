@@ -1,11 +1,7 @@
 class Api {
-
-  baseUrl = 'http://localhost:3000'
+  baseUrl = 'http://localhost:3000/api/v1'
   loginUrl = `${this.baseUrl}/login`
   signupUrl = `${this.baseUrl}/signup`
-  newChordUrl = `${this.baseUrl}/chord`
-  userChordsUrl = `${this.baseUrl}/user/chords`
-  chordsUrl = `${this.baseUrl}/chords`
 
   headers = () => {
     return {
