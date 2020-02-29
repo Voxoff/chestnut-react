@@ -1,10 +1,11 @@
 import React from 'react';
 import Navbar from './Navbar'
 import API from '../helpers/API'
-
+import { FormControl, InputLabel, Input, FormHelperText, Button, ButtonGroup } from '@material-ui/core'
 const initialState = {
   email: '',
-  password: ''
+  password: '',
+  loggedIn: false
 }
 
 class Index extends React.Component {
@@ -13,14 +14,14 @@ class Index extends React.Component {
     this.state = initialState
   }
 
-  login = (email, token) => {
-    this.setState({ email })
-    localStorage.setItem('token', token)
+  login = (email, jwt) => {
+    this.setState({ email, loggedIn: true })
+    localStorage.setItem('jwt', jwt)
   }
 
   logout = () => {
     this.setState(initialState)
-    localStorage.removeItem('token')
+    localStorage.removeItem('jwt')
   }
 
   handleChange = e => this.setState({ [e.target.name]: e.target.value })
@@ -33,7 +34,8 @@ class Index extends React.Component {
           this.setState(initialState)
           alert(data.error)
         } else {
-          this.login(this.state.email, data.token)
+          console.log(data)
+          this.login(this.state.email, data.jwt)
         }
       })
   }
@@ -43,14 +45,13 @@ class Index extends React.Component {
     if (!this.state.email || !this.state.password) {
       alert('email and Password fields must both be filled in.')
     } else {
-      console.log(this.state)
       API.post(API.signupUrl, this.state)
       .then(data => {
           if (data.error) {
             this.setState(initialState)
             alert(data.error)
           } else {
-            this.login(this.state.email, data.token)
+            this.login(this.state.email, data.jwt)
           }
         })
     }
@@ -62,16 +63,23 @@ class Index extends React.Component {
     return (
       <div className="App">
         <Navbar />
-         <form>
-            <div className="homepage-form-inputs">
-              <input onChange={handleChange} type="text" placeholder='email' name="email" value={email} />
-              <input onChange={handleChange} type="password" placeholder='Password' name="password" value={password} />
-            </div>
-            <div className="homepage-form-buttons">
-              <button onClick={onClickLogin}>Login</button>
-              <button onClick={onClickSignup}>Sign Up</button>
-            </div>
-          </form>
+         { !this.state.loggedIn && (
+          <div>
+          <FormControl>
+            <InputLabel htmlFor="my-input">Email address</InputLabel>
+            <Input onChange={handleChange} type="text" placeholder='email' name="email" value={email} />
+            <FormHelperText id="my-helper-text">We'll never share your email.</FormHelperText>
+          </FormControl>
+          <FormControl>
+            <InputLabel htmlFor="my-input">Password</InputLabel>
+            <Input onChange={handleChange} type="text" placeholder='password' name="password" value={password}/>
+          </FormControl>
+          <ButtonGroup color="primary" aria-label="outlined primary button group">
+            <Button onClick={onClickLogin}>Login</Button>
+            <Button onClick={onClickSignup}>Singup</Button>
+          </ButtonGroup>
+          </div>
+         )}
       </div>
     );
   }
